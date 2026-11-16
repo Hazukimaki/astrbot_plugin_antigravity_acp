@@ -4,8 +4,17 @@
 
 > 本版内容与 0.7.0 相同：0.7.0 发布后未被 AstrBot 插件市场收录，已撤回其 GitHub 发布（release 与 tag），以 0.7.1 递增版本号重新发布。
 
+### 文档与 Agent 入口（#16）
+
+- 新增精简 `AGENTS.md` 与当前架构/源码测试索引、分类排障 SOP、测试验收和交付规范；README Agent 区改为当前契约摘要。
+- 明确 AstrBot `>=4.29.4,<4.30`，区分已知 4.30 文案识别与宿主兼容；纠正授权码输入、保存与生成、未知用量及 429 候选的说明。
+- 核对 `telemetry.py` / `test_content_429.py`：已有输出的失败轮仍可能记录候选，必须同时检查 `has_output`；候选不能证明 Google 上游根因。保留安全边界和防重复执行/重放规则。
+- 清理 Markdown 残留，为历史计划/报告补当前入口；本次验证与独立审读/维护者验收状态见 [文档验证记录](docs/agent-docs-validation.md)。
+
+## 0.7.0（正式发布，2026-11-17）
+
 - **429 内容相关（P0）结构化标签过滤**：`filter_host_capabilities()` 升级为「结构化标签优先、精确文案兜底」——整块移除 AstrBot 4.30 `<execution_environment runtime="local">` 宿主块（须含宿主已知小节标记）；前置短路补标签检查，防宿主改写首句后静默失效；4.30 Windows AppContainer 尾段两变体经上游 6a782b7 源码 AST 机械提取，逐字节一致；残缺/嵌套/未知 runtime/人格同名标签 fail-open 保留并记无正文 debug 原因，正常命中不产生日志；4.29.4 精确块继续保留。只读工具名审计器（P0.3）与净化重试（P2）按调研结论本期暂缓/不做。
-- **429 候选归因遥测（P1）**：`RetryNoticeGuard` 识别 detail-free 429（CLI 摘要级，排除结构化细节形态）；失败轮在 `agy.turn` 记录 `content_429_candidate`（system_hash8 / system_bytes / has_output / attempt，绝不落 system 原文），`has_output` 覆盖非空白正文、thought 与工具产出；单行 detail-free → 候选，quota 文案 / 结构化细节 / 已有输出 → 非候选。**不修改 FailureGuard 冷却键、TTL 与 record_success 语义**。
+- **429 候选归因遥测（P1）**：`RetryNoticeGuard` 识别 detail-free 429（CLI 摘要级，排除结构化细节形态）；失败轮在 `agy.turn` 记录 `content_429_candidate`（system_hash8 / system_bytes / has_output / attempt，绝不落 system 原文），`has_output` 覆盖非空白正文、thought 与工具产出；独立 quota 文案/结构化细节测试场景不记候选，detail-free 失败轮即使已有输出仍可记候选，必须同时查看 `has_output`。这只是候选诊断，不证明上游根因。**不修改 FailureGuard 冷却键、TTL 与 record_success 语义**。
 - **WebUI 信息精简与监控面板重构**（按管理员 UI/UX 计划执行）：运行监控三层——概览（默认展开紧凑双列，口径标签区分实时会话池 / 近 24h / 最近采样，缺数据显示「上游未报告」不伪造 0%）＋详细统计（按需展开，纯 SVG Token 构成堆积条、复用率与缓存占比双环、耗时分布、重建原因、历史记录）＋高级诊断（默认折叠，ACP 错误 / 429 候选 / telemetry 字段）；环境页深层技术参数收进折叠「高级诊断」抽屉；认证与模型配置文案精简，复杂说明入帮助弹窗；移动端 360px 适配、深色对比度、折叠交互反馈。可视化零外部依赖；监控数据源不变（`monitor/status` 只读快照），后端 Python 零改动。
 - `monitor/status` 保持仅面板管理员可读、`Cache-Control: no-store`、递归白名单投影；429 端到端测试夹具对齐生产实机 CLI 1.5.8 单行告警形态。
 
