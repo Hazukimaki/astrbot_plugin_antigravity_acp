@@ -24,6 +24,8 @@ jobs:
         with:
           node-version: "22"
       - name: Sensitive pattern scan
+        env:
+          PYTHONIOENCODING: utf-8
         run: python tools/check_sensitive.py
       - name: Byte-compile all plugin sources
         run: python -B -m compileall -q main.py agy_provider tests
