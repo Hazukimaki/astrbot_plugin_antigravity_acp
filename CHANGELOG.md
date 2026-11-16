@@ -1,10 +1,13 @@
 # 变更记录
 
-## 未发布
+## 0.7.0（正式发布，2026-11-17）
 
-- WebUI 监控 P0：新增管理员只读 `monitor/status`（schema_version=1），限制最近 20 轮并递归投影安全字段；拒绝 API Key 身份，响应 `Cache-Control: no-store`，停用清理路由。读取当前已激活实例的内存快照，不启动 CLI、探测或模型请求。
-- 首次设置页新增运行概览：按实例展示会话池、24h 已知 Token/缓存/复用、usage 缺失、最近异常与有效上下文；10 秒刷新、隐藏暂停，失败显示数据过期。真实上游采样时间与页面刷新时间分开，无样本为 null；关闭或换模型的会话不提供旧上下文。原 01–04 向导保留。监控 P1/P2 尚未实现，真实面板验收待完成。
-- 429 候选遥测补充 Provider→fake_cli→`agy.turn` 端到端测试，覆盖单行 detail-free、QUOTA、RetryInfo 和先正文后失败，strong-rate 回归保留。字面多行 detail-free 通知当前仍会超时而非 fast-fail，记录为预期失败；本次未改 `notices.py`、FailureGuard 或 system 过滤逻辑。
+- **429 内容相关（P0）结构化标签过滤**：`filter_host_capabilities()` 升级为「结构化标签优先、精确文案兜底」——整块移除 AstrBot 4.30 `<execution_environment runtime="local">` 宿主块（须含宿主已知小节标记）；前置短路补标签检查，防宿主改写首句后静默失效；4.30 Windows AppContainer 尾段两变体经上游 6a782b7 源码 AST 机械提取，逐字节一致；残缺/嵌套/未知 runtime/人格同名标签 fail-open 保留并记无正文 debug 原因，正常命中不产生日志；4.29.4 精确块继续保留。只读工具名审计器（P0.3）与净化重试（P2）按调研结论本期暂缓/不做。
+- **429 候选归因遥测（P1）**：`RetryNoticeGuard` 识别 detail-free 429（CLI 摘要级，排除结构化细节形态）；失败轮在 `agy.turn` 记录 `content_429_candidate`（system_hash8 / system_bytes / has_output / attempt，绝不落 system 原文），`has_output` 覆盖非空白正文、thought 与工具产出；单行 detail-free → 候选，quota 文案 / 结构化细节 / 已有输出 → 非候选。**不修改 FailureGuard 冷却键、TTL 与 record_success 语义**。
+- **WebUI 信息精简与监控面板重构**（按管理员 UI/UX 计划执行）：运行监控三层——概览（默认展开紧凑双列，口径标签区分实时会话池 / 近 24h / 最近采样，缺数据显示「上游未报告」不伪造 0%）＋详细统计（按需展开，纯 SVG Token 构成堆积条、复用率与缓存占比双环、耗时分布、重建原因、历史记录）＋高级诊断（默认折叠，ACP 错误 / 429 候选 / telemetry 字段）；环境页深层技术参数收进折叠「高级诊断」抽屉；认证与模型配置文案精简，复杂说明入帮助弹窗；移动端 360px 适配、深色对比度、折叠交互反馈。可视化零外部依赖；监控数据源不变（`monitor/status` 只读快照），后端 Python 零改动。
+- `monitor/status` 保持仅面板管理员可读、`Cache-Control: no-store`、递归白名单投影；429 端到端测试夹具对齐生产实机 CLI 1.5.8 单行告警形态。
+
+验证与实机验收（2026-11-17）：本机与生产容器各跑一轮全量离线回归，246 项全过（12 项按平台跳过，0 失败，0 预期失败）；前端 node --test 19/19；Windows × Python 3.11 / 3.12 CI 矩阵全绿。生产实机（AstrBot 4.29.4 + AGY CLI 1.5.8）部署后：插件零报错加载、host_compat 正常、容器内回归通过、`monitor/status` 200 + no-store、webchat 端到端（agy_probe）正常；前端面板经管理员人工验收通过。计划先行经 agy gemini-4-hydrogen-xhigh 独立复核（REVISE 意见全部吸收）。已知待办：面板程序化访问的 JWT cookie 注入被前端路由守卫拒绝（后端已核实支持 ApiKey 认证），记录在调研目录 dashboard-login-notes.md，不在本仓库。
 
 ## 0.6.1（正式发布，2026-11-16）
 

@@ -9,7 +9,7 @@
 ![AstrBot](https://img.shields.io/badge/AstrBot-%3E%3D4.29.4-orange)
 ![Status](https://img.shields.io/badge/Status-v0.6.1-brightgreen)
 
-> **当前正式版本 0.6.1（2026-11-16 发布）**。0.6.1 修复 #11–#14（MCP 权限分层、schema 契约分离、权限拒绝归因、能力声明过滤），全量离线回归 222 项（210 通过 / 12 按平台跳过）与生产实机 webchat 验收完成，详见 [CHANGELOG](CHANGELOG.md)。0.6.0 的生产实机验收（AstrBot 4.29.4 + AGY CLI 1.5.8，含真实 429 限流风暴下的快速中断与 fallback 兜底）见 [PR #9 验收记录](docs/pr9-acceptance.md)；实施范围与回滚方式见 [改进计划](docs/liftgate-hardening-plan.md)。
+> **当前正式版本 0.7.0（2026-11-17 发布）**。0.7.0 落地 429 内容相关的结构化标签过滤与候选归因遥测（`content_429_candidate`，不改冷却语义），并完成 WebUI 信息精简与运行监控三层重构（概览 / 详细统计 / 高级诊断，纯 SVG 可视化）。全量离线回归 246 项、前端 19 项、Windows × Python 3.11/3.12 CI 全绿，生产实机验收通过，详见 [CHANGELOG](CHANGELOG.md)。0.6.0 的生产实机验收（AstrBot 4.29.4 + AGY CLI 1.5.8，含真实 429 限流风暴下的快速中断与 fallback 兜底）见 [PR #9 验收记录](docs/pr9-acceptance.md)；实施范围与回滚方式见 [改进计划](docs/liftgate-hardening-plan.md)。0.6.0 的生产实机验收（AstrBot 4.29.4 + AGY CLI 1.5.8，含真实 429 限流风暴下的快速中断与 fallback 兜底）见 [PR #9 验收记录](docs/pr9-acceptance.md)；实施范围与回滚方式见 [改进计划](docs/liftgate-hardening-plan.md)。
 
 通过 Google 官方 `agy` 客户端内置的 ACP（Agent Client Protocol）协议，将 Antigravity 接入 AstrBot 作为日常对话模型使用。
 
@@ -114,7 +114,7 @@ git clone --branch main https://github.com/sl251/astrbot_plugin_antigravity_acp.
   管理员可执行 `/agy doctor` 进行无生成连通自检，或执行 `/agy cost` 查看各实例只读缓存复用、Token 统计与进程池摘要（不发送任何模型请求）。
 - **关于连通测试与额度**：
   插件「首次设置」里的检测、登录、拉取模型列表均不消耗对话额度。但 AstrBot 模型页自带的“连通测试”会实际发送一条测试消息，消耗少量额度；另外，模型保存成功仅代表协议握手通过，实际能否对话仍取决于账号自身是否有剩余额度。
-- **本机能力与 429 规避**：0.6.1 会过滤 AstrBot 4.29.4 已知的失实本地工具声明；若开启「使用电脑能力 → 本机环境」后仍出现 429，可暂改「不允许任何环境」。该现象的上游根因仍待确认，开源对照、机制判断与后续方案见 [内容相关 429 调研](docs/429-prompt-investigation.md)。
+- **本机能力与 429 规避**：0.7.0 会过滤 AstrBot 4.29.4 与 4.30 已知的失实本地工具声明；若开启「使用电脑能力 → 本机环境」后仍出现 429，可暂改「不允许任何环境」。该现象的上游根因仍待确认，开源对照、机制判断与后续方案见 [内容相关 429 调研](docs/429-prompt-investigation.md)。
 
 ---
 
@@ -148,7 +148,7 @@ git clone --branch main https://github.com/sl251/astrbot_plugin_antigravity_acp.
 
 ## 1. System Identity & Core Invariants (核心契约与安全边界)
 
-- **Plugin ID / Repo**: `astrbot_plugin_antigravity_acp` (`v0.6.1`)
+- **Plugin ID / Repo**: `astrbot_plugin_antigravity_acp` (`v0.7.0`)
 - **Registered Provider Type**: `agy_acp` (Native AstrBot Chat Provider)
 - **Runtime Requirements**: AstrBot `>= 4.29.4, < 4.30` (Verified on `4.29.4`), Python `3.11+`, Zero third-party pip dependencies.
 - **Compliance & Security Invariants (DO NOT VIOLATE)**:
