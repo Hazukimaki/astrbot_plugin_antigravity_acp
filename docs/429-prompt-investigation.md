@@ -1,5 +1,7 @@
 # 内容相关 429：开源实践对照与插件处置方案
 
+> 历史调研快照：本文以 0.6.x 为调查基线，方案/外部项目结论不自动等于当前实现或官方归因。v0.7.0 已交付范围见 [CHANGELOG](../CHANGELOG.md)，当前过滤与候选契约见 [architecture.md](architecture.md#system-过滤与-429-的证据边界)，操作流程见 [troubleshooting.md](troubleshooting.md#rate_limit--quota-与-14)。运行范围仍为 AstrBot `>=4.29.4,<4.30`；4.30 为文案研究样本。
+
 - 日期：2026-11-17
 - 适用：`astrbot_plugin_antigravity_acp` 0.6.x（AstrBot 4.29.4 / 4.30 开发线，AGY CLI 1.5.x）
 - 关联：#14（纯聊天仍携带宿主本地工具说明；596B 说明可独立复现 429）、#10（限流后停留 fallback，独立缺陷）
