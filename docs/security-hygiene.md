@@ -17,8 +17,8 @@ python tools/check_sensitive.py          # 全仓库
 python tools/check_sensitive.py 文件     # 指定文件
 ```
 
-规则：邮箱、中国大陆手机号、常见 API Key 形态、认证元数据字段（`authMethod=` /
-`quotaProject=` / `access_token=` 等）。命中返回非零退出码，CI 已接入该检查。
+规则：邮箱、中国大陆手机号、常见 API Key 形态、认证元数据字段（带值的 `authMethod` /
+`quotaProject` / `access_token` 等）。命中返回非零退出码，CI 已接入该检查。
 白名单只放通用占位符（`example.com` 等），不放真实账号。
 
 ## review-bundle/ 的定位

@@ -44,7 +44,7 @@ PATTERNS = [
         r"sk-[A-Za-z0-9]{20,}|AIza[A-Za-z0-9_\-]{20,}|xox[baprs]-[A-Za-z0-9\-]{10,})\b")),
     # 认证元数据关键字（账号标识伴随的字段名）
     ("auth_meta", re.compile(
-        r"(authMethod\s*[=:]|quotaProject\s*[=:]|applyAuthResult|"
+        r"(authMethod\s*[=:]\s*\S+|quotaProject\s*[=:]\s*\S+|applyAuthResult|"
         r"access_token\s*[=:]\s*\S+|refresh_token\s*[=:]\s*\S+|"
         r"client_secret\s*[=:]\s*\S+|password\s*[=:]\s*['\"]?\S+)", re.I)),
 ]
