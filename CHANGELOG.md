@@ -1,6 +1,8 @@
 # 变更记录
 
-## 0.7.0（正式发布，2026-11-17）
+## 0.7.1（正式发布，2026-11-17）
+
+> 本版内容与 0.7.0 相同：0.7.0 发布后未被 AstrBot 插件市场收录，已撤回其 GitHub 发布（release 与 tag），以 0.7.1 递增版本号重新发布。
 
 - **429 内容相关（P0）结构化标签过滤**：`filter_host_capabilities()` 升级为「结构化标签优先、精确文案兜底」——整块移除 AstrBot 4.30 `<execution_environment runtime="local">` 宿主块（须含宿主已知小节标记）；前置短路补标签检查，防宿主改写首句后静默失效；4.30 Windows AppContainer 尾段两变体经上游 6a782b7 源码 AST 机械提取，逐字节一致；残缺/嵌套/未知 runtime/人格同名标签 fail-open 保留并记无正文 debug 原因，正常命中不产生日志；4.29.4 精确块继续保留。只读工具名审计器（P0.3）与净化重试（P2）按调研结论本期暂缓/不做。
 - **429 候选归因遥测（P1）**：`RetryNoticeGuard` 识别 detail-free 429（CLI 摘要级，排除结构化细节形态）；失败轮在 `agy.turn` 记录 `content_429_candidate`（system_hash8 / system_bytes / has_output / attempt，绝不落 system 原文），`has_output` 覆盖非空白正文、thought 与工具产出；单行 detail-free → 候选，quota 文案 / 结构化细节 / 已有输出 → 非候选。**不修改 FailureGuard 冷却键、TTL 与 record_success 语义**。

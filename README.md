@@ -7,13 +7,13 @@
 ![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows%20%7C%20Docker-blue)
 ![Python](https://img.shields.io/badge/Python-3.11+-blue)
 ![AstrBot](https://img.shields.io/badge/AstrBot-%3E%3D4.29.4-orange)
-![Status](https://img.shields.io/badge/Status-v0.7.0-brightgreen)
+![Status](https://img.shields.io/badge/Status-v0.7.1-brightgreen)
 
-> **当前正式版本 0.7.0（2026-11-17 发布）**。0.7.0 落地 429 内容相关的结构化标签过滤与候选归因遥测（`content_429_candidate`，不改冷却语义），并完成 WebUI 信息精简与运行监控三层重构（概览 / 详细统计 / 高级诊断，纯 SVG 可视化）。全量离线回归 246 项、前端 19 项、Windows × Python 3.11/3.12 CI 全绿，生产实机验收通过，详见 [CHANGELOG](CHANGELOG.md)。0.6.0 的生产实机验收（AstrBot 4.29.4 + AGY CLI 1.5.8，含真实 429 限流风暴下的快速中断与 fallback 兜底）见 [PR #9 验收记录](docs/pr9-acceptance.md)；实施范围与回滚方式见 [改进计划](docs/liftgate-hardening-plan.md)。
+> **当前正式版本 0.7.1（2026-11-17 发布）**。0.7.1 落地 429 内容相关的结构化标签过滤与候选归因遥测（`content_429_candidate`，不改冷却语义），并完成 WebUI 信息精简与运行监控三层重构（概览 / 详细统计 / 高级诊断，纯 SVG 可视化）。全量离线回归 246 项、前端 19 项、Windows × Python 3.11/3.12 CI 全绿，生产实机验收通过，详见 [CHANGELOG](CHANGELOG.md)。0.6.0 的生产实机验收（AstrBot 4.29.4 + AGY CLI 1.5.8，含真实 429 限流风暴下的快速中断与 fallback 兜底）见 [PR #9 验收记录](docs/pr9-acceptance.md)；实施范围与回滚方式见 [改进计划](docs/liftgate-hardening-plan.md)。
 
 通过 Google 官方 `agy` 客户端内置的 ACP（Agent Client Protocol）协议，将 Antigravity 接入 AstrBot 作为日常对话模型使用。
 
-> **WebUI 运行监控（v0.7.0 已发布）**：在 AstrBot 插件详情 →「首次设置」查看，按「运行概览 / 详细统计 / 高级诊断」分层展示会话池、近 24 小时用量、最近上下文采样、缓存和异常信息。监控仅供管理员读取本地快照，不额外请求模型；每实例最多保留最近 24 小时的 100 轮记录，进程重启后清空。缺少上游用量时显示「上游未报告」或「未知」，并非 Google 账号余额。详见 [0.7.0 更新日志](CHANGELOG.md)。
+> **WebUI 运行监控（v0.7.1 已发布）**：在 AstrBot 插件详情 →「首次设置」查看，按「运行概览 / 详细统计 / 高级诊断」分层展示会话池、近 24 小时用量、最近上下文采样、缓存和异常信息。监控仅供管理员读取本地快照，不额外请求模型；每实例最多保留最近 24 小时的 100 轮记录，进程重启后清空。缺少上游用量时显示「上游未报告」或「未知」，并非 Google 账号余额。详见 [0.7.1 更新日志](CHANGELOG.md)。
 
 ---
 
@@ -114,7 +114,7 @@ git clone --branch main https://github.com/sl251/astrbot_plugin_antigravity_acp.
   管理员可执行 `/agy doctor` 进行无生成连通自检，或执行 `/agy cost` 查看各实例只读缓存复用、Token 统计与进程池摘要（不发送任何模型请求）。
 - **关于连通测试与额度**：
   插件「首次设置」里的检测、登录、拉取模型列表均不消耗对话额度。但 AstrBot 模型页自带的“连通测试”会实际发送一条测试消息，消耗少量额度；另外，模型保存成功仅代表协议握手通过，实际能否对话仍取决于账号自身是否有剩余额度。
-- **本机能力与 429 规避**：0.7.0 会过滤 AstrBot 4.29.4 与 4.30 已知的失实本地工具声明；若开启「使用电脑能力 → 本机环境」后仍出现 429，可暂改「不允许任何环境」。该现象的上游根因仍待确认，开源对照、机制判断与后续方案见 [内容相关 429 调研](docs/429-prompt-investigation.md)。
+- **本机能力与 429 规避**：0.7.1 会过滤 AstrBot 4.29.4 与 4.30 已知的失实本地工具声明；若开启「使用电脑能力 → 本机环境」后仍出现 429，可暂改「不允许任何环境」。该现象的上游根因仍待确认，开源对照、机制判断与后续方案见 [内容相关 429 调研](docs/429-prompt-investigation.md)。
 
 ---
 
@@ -122,7 +122,7 @@ git clone --branch main https://github.com/sl251/astrbot_plugin_antigravity_acp.
 
 *(详细技术变更见 [`CHANGELOG.md`](./CHANGELOG.md))*
 
-- **v0.7.0（正式发布）**：429 相关宿主能力声明过滤扩展至 AstrBot 4.30 已知结构化标签，新增内容相关 429 候选遥测；WebUI 精简文案并重构三层运行监控与 SVG 可视化。246 项离线测试中 234 通过、12 项跳过，前端 19 项通过，生产实机验收完成。
+- **v0.7.1（正式发布）**：429 相关宿主能力声明过滤扩展至 AstrBot 4.30 已知结构化标签，新增内容相关 429 候选遥测；WebUI 精简文案并重构三层运行监控与 SVG 可视化。246 项离线测试中 234 通过、12 项跳过，前端 19 项通过，生产实机验收完成。
 - **v0.6.1（正式发布）**：修复 #11–#14，完善 MCP 权限分层、工具调用失败归因、数组 schema 宿主契约和 AstrBot 4.29.4 本地能力声明过滤。
 - **v0.6.0（正式发布）**：疑似上游压缩后终态退休、强错误提前中断、部分输出/工具失败防重放、Windows 认证 MCP 桥与 Job Object、成本分组和 CLI 能力诊断。组件精简实验默认关闭；动态 MCP 更新与 CLI 安装器未交付。
 - **v0.5.3**：修复 #8：Windows 深路径宿主下首聊因 `MAX_PATH`（260 字符）被拒而报 `FileNotFoundError`；会话数据改用 Win32 扩展长度路径（`\\?\`），不再要求开启 `LongPathsEnabled`。
@@ -150,7 +150,7 @@ git clone --branch main https://github.com/sl251/astrbot_plugin_antigravity_acp.
 
 ## 1. System Identity & Core Invariants (核心契约与安全边界)
 
-- **Plugin ID / Repo**: `astrbot_plugin_antigravity_acp` (`v0.7.0`)
+- **Plugin ID / Repo**: `astrbot_plugin_antigravity_acp` (`v0.7.1`)
 - **Registered Provider Type**: `agy_acp` (Native AstrBot Chat Provider)
 - **Runtime Requirements**: AstrBot `>= 4.29.4, < 4.30` (Verified on `4.29.4`), Python `3.11+`, Zero third-party pip dependencies.
 - **Compliance & Security Invariants (DO NOT VIOLATE)**:
@@ -178,11 +178,11 @@ flowchart LR
 - **Process Pool & Cleanup**: Sessions remain serialized and bounded. Linux/macOS retain separate process groups. Windows attaches a kill-on-close Job Object immediately after spawn and falls back to `taskkill /T` when unavailable. Attachment is not atomic with spawn; POSIX does not add `preexec_fn`/parent-death hooks, so host SIGKILL and unbound Windows descendants remain limitations.
 - **No Replay After Output**: Partial text/thoughts or handed-off tools cause a terminal `no_retry` + `no_fallback` failure. The existing AstrBot 4.29.4 compatibility layer also intercepts later fallback candidates before they call another provider; simply adding an exception attribute would not stop this host version. Pre-output cooldown/deduplication still permits host fallback. Other runners must honor these attributes, and missing compatibility methods produce a warning. Contract tests include the official 4.29.4 fallback method; production full-host validation is done (see docs/pr9-acceptance.md). A post-429-burst fallback-stickiness observation is tracked in #10.
 
-### 0.7.0 宿主声明兼容与只读监控
+### 0.7.1 宿主声明兼容与只读监控
 
 - **宿主能力声明过滤**：在 0.6.1 精确匹配 AstrBot 4.29.4 文案的基础上，增加 4.30 已知 `<execution_environment runtime="local">` 完整宿主块处理；残缺、嵌套、未知格式或人格同名标签保持原文，避免误删。4.30 文案已按上游源码核对，但当前插件声明的运行兼容范围仍为 AstrBot `>=4.29.4,<4.30`。
 - **429 候选遥测**：detail-free 429 可记录 `content_429_candidate` 与脱敏 system 指纹、字节数等排查字段；它仅表示候选现象，不等于确认上游根因或账号额度不足，也不改变 FailureGuard 的冷却规则。
-- **WebUI 监控**：`monitor/status` 仍为管理员专用只读快照，使用白名单字段和 `Cache-Control: no-store`；概览、详细统计、高级诊断按层级展示，数据缺失不能当作零值。生产验收与测试结果见 CHANGELOG 0.7.0。
+- **WebUI 监控**：`monitor/status` 仍为管理员专用只读快照，使用白名单字段和 `Cache-Control: no-store`；概览、详细统计、高级诊断按层级展示，数据缺失不能当作零值。生产验收与测试结果见 CHANGELOG 0.7.1。
 
 ### 0.6.1 权限分层与失败归因（#11–#14）
 
@@ -208,7 +208,7 @@ ACP permission 只决定能否进入 MCP 桥，不等于宿主批准执行。`se
 
 `ToolSnapshot.to_host_schema` 保存独立宿主原始契约，wire `inputSchema` 仅供模型使用。Gemini 缺失 array items 时仍保守补 string（未假设其支持空 items）；dispatch 按原始契约校验，宿主回填按已审计调用与参数精确匹配。两份 schema 均纳入快照指纹，避免适配结果相同掩盖宿主契约改变。
 
-0.6.1 的 `system_prompt.py` 在构建会话前，对 chat / tools 的稳定 system 都执行同一过滤：只匹配以 `Local computer tools are available subject to your role's file and execution permissions.` 开头的 **AstrBot 4.29.4 完整独立行**，覆盖已知 Unix 文案与 Windows PowerShell 两变体。该宿主本地 shell/session 声明不代表 AGY 会话能力；不会以通用正则删除人格，也不修改用户/助手历史、结构化 transient 数据或宿主源对象。过滤后 system 哈希与字节统计同步更新。残缺、内嵌引用或未知变体保持原样，仅记录不含正文的 debug；宿主改文案后需要重新核对规则（明确版本耦合）。这是 0.6.1 的实现记录；0.7.0 的扩展行为见上文。#14 的上游 429 根因尚未查明。
+0.6.1 的 `system_prompt.py` 在构建会话前，对 chat / tools 的稳定 system 都执行同一过滤：只匹配以 `Local computer tools are available subject to your role's file and execution permissions.` 开头的 **AstrBot 4.29.4 完整独立行**，覆盖已知 Unix 文案与 Windows PowerShell 两变体。该宿主本地 shell/session 声明不代表 AGY 会话能力；不会以通用正则删除人格，也不修改用户/助手历史、结构化 transient 数据或宿主源对象。过滤后 system 哈希与字节统计同步更新。残缺、内嵌引用或未知变体保持原样，仅记录不含正文的 debug；宿主改文案后需要重新核对规则（明确版本耦合）。这是 0.6.1 的实现记录；0.7.1 的扩展行为见上文。#14 的上游 429 根因尚未查明。
 
 本版回归与实机验收记录见 CHANGELOG 0.6.1 段：全量离线回归 222 项（210 通过 / 12 按平台跳过 / 0 失败，Linux 本地与生产容器各一轮），生产 AstrBot 4.29.4 上 `agy_probe` 注册与 webchat 端到端正常；Windows × Python 3.11 / 3.12 由 CI 矩阵覆盖。#10 不在本版范围。
 
