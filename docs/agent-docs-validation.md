@@ -1,6 +1,6 @@
 # #16 文档改进验证记录
 
-日期：2026-11-17。基线：`492d9b2`（发布基线 v0.7.0）；交付分支：`docs/agent-contracts-issue-16`。本次仅修改 Markdown；未改运行代码、配置、认证、ACP 或 WebUI 行为，没有部署或升级 CLI。
+日期：2026-11-17。基线：`492d9b2`（当时发布基线 v0.7.0；合并时发布基线已升至 v0.7.1）；交付分支：`docs/agent-contracts-issue-16`。本次仅修改 Markdown；未改运行代码、配置、认证、ACP 或 WebUI 行为，没有部署或升级 CLI。
 
 ## 范围与证据
 
@@ -34,7 +34,7 @@ Python 跳过项（非通过项）：
 
 ## 版本与验收限制
 
-- metadata、README、AGENTS 和发布日志均以 **0.7.0** 为当前发布基线。发现既有 `main.py` 注册、transport clientInfo、mcp_bridge serverInfo 仍标 **0.6.1**；已明确记录，因本任务仅文档而未修改运行文件。后续行为发布应统一声明。
+- metadata、README、AGENTS 和发布日志均以 **0.7.1** 为当前发布基线。文档任务期间 `main.py` 注册、transport clientInfo、mcp_bridge serverInfo 曾标 **0.6.1**；已在本版发布时统一为 0.7.1，验证记录保留当时发现。
 - 当前提交 CI：以交付 PR 的 Checks 与提交 SHA 为准，远端结果另行报告；本报告的计数仅指上述本地运行，不以历史发布 CI 冒充。
 - 本次未执行真实官方 CLI、模型生成、真实工具、宿主 iframe/HTTP 或生产部署验收；所有模型/宿主输入均为离线夹具。
 - 本次 Markdown 检查不重新核实历史调研的外部项目结论；远程历史证据链接未逐一探测。GitHub 原生 Mermaid/页面视觉效果亦需审阅。

@@ -1,6 +1,6 @@
 # 测试、验收与交付规范
 
-适用基线 **v0.7.0**，Python **3.11+**、AstrBot **`>=4.29.4,<4.30`**。先读 [AGENTS.md](../AGENTS.md) 的安全边界，按 [架构索引](architecture.md#故障定位索引) 找既有测试。数量由本次运行得出，不把旧版本测试总数当作当前结果。
+适用基线 **v0.7.1**，Python **3.11+**、AstrBot **`>=4.29.4,<4.30`**。先读 [AGENTS.md](../AGENTS.md) 的安全边界，按 [架构索引](architecture.md#故障定位索引) 找既有测试。数量由本次运行得出，不把旧版本测试总数当作当前结果。
 
 ## 开发流程
 
@@ -65,8 +65,8 @@ git diff --check
 - `git diff --name-only` / `git status --short` 核对包括新增文件在内的实际范围，确认没有 ACP、认证、Provider、WebUI 或配置行为修改。
 - 渲染 README 的 HTML/details、表格和 Mermaid；检查新文档的标题层级、配对代码围栏及列表，不把代码块里的伪链接当作正文链接。
 - 逐一验证修改文档中的相对文件/目录链接及本地标题锚点；有空格的真实路径须正确编码或用合适的 Markdown 链接。远程链接的可达性如未验证，单列限制。
-- 对照 `metadata.yaml`、main 注册、ACP clientInfo、MCP serverInfo 和 CHANGELOG 的当前版本；文档专项保持 v0.7.0，不擅自发布 0.7.1/0.8.0。
-- 当前基线后三个源码标签仍为 0.6.1，而 metadata 为 0.7.0，已在 [架构页](architecture.md) 记录；检查结果须列出该差异，不能虚报所有字段已一致，文档专项也不借机修改运行文件。
+- 对照 `metadata.yaml`、main 注册、ACP clientInfo、MCP serverInfo 和 CHANGELOG 的当前版本；文档专项保持与当前发布基线一致；版本升级由维护者统一发布。
+- 当前基线 metadata 与 main 注册、ACP clientInfo、MCP serverInfo 已统一为 0.7.1（本版修复了此前的 0.6.1 标签漂移）。
 - 扫描“本版/下一版/待验收/未发布”等易过时词语。历史文件保留原始证据，但在入口标注时间和后续状态；不要把历史计划中的未实现项改成当前已交付。
 - 对 #12、#13、#14 走一遍文档导航，确认无需先读旧施工书就能找到源码、测试和保守结论。特别核验：一次性许可不绕过宿主、原始 schema 不被收窄、429 候选不是根因、已有输出不重放。
 

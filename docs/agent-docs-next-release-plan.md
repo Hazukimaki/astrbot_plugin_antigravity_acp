@@ -1,6 +1,6 @@
 # 下一版本候选：Agent 文档与排障入口重构
 
-> 状态：文档已实施，验证与审阅状态见 [验证记录](agent-docs-validation.md)；独立 Agent 审读与维护者验收仍待完成，尚未合并或单独发布。当前运行基线仍为 v0.7.0（2026-11-17），不绑定下一版本号。
+> 状态：文档已实施，验证与审阅状态见 [验证记录](agent-docs-validation.md)；独立 Agent 审读与维护者验收仍待完成，尚未合并或单独发布。当前运行基线为 v0.7.1（2026-11-17），不绑定下一版本号。
 > 当前入口：[AGENTS.md](../AGENTS.md)、[架构](architecture.md)、[排障](troubleshooting.md)、[测试](testing.md)。下列清单记录文档实施范围；勾选不代表实机验证或最终验收。关联 [#16](https://github.com/sl251/astrbot_plugin_antigravity_acp/issues/16)。
 
 ## 现状与问题
@@ -42,7 +42,7 @@
 ## P2：文档一致性与维护
 
 - [x] 清理 README 最后一行孤立的 ``` 围栏；检查 Markdown 渲染、链接与标题锚点。
-- [x] 扫描陈旧表述（版本徽章、上一正式版本、尚未发布、待验收）；README / AGENTS.md / metadata.yaml / CHANGELOG 的当前发布基线已对齐为 0.7.0。既有三个运行源码标签仍为 0.6.1，已明确记录，后续行为发布需统一；不将其虚报为已修正。
+- [x] 扫描陈旧表述（版本徽章、上一正式版本、尚未发布、待验收）；README / AGENTS.md / metadata.yaml / CHANGELOG 的当前发布基线已对齐为 0.7.1，三个运行源码标签也在 0.7.1 发布时统一。
 - [x] 为关键技术声明标注事实来源：源码文件/测试/正式更新日志；过期或无法核实的描述删去或标明待验证。
 - [x] 不为文档重构引入运行时依赖，也不顺手改动 ACP、认证、Provider 或 WebUI 行为。
 
