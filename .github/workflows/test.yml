@@ -23,6 +23,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Sensitive pattern scan
+        run: python tools/check_sensitive.py
       - name: Byte-compile all plugin sources
         run: python -B -m compileall -q main.py agy_provider tests
       - name: Offline Python regressions
