@@ -102,6 +102,7 @@ git clone --branch main https://github.com/sl251/astrbot_plugin_antigravity_acp.
   插件「首次设置」里的环境检测、登录与拉取模型列表完全免费、不消耗模型额度；但 AstrBot 模型列表自带的「连通测试」会实际发送一条打招呼测试消息，消耗少量额度。另外，保存成功只代表协议握手通过，不等于实际对话一定可用。
 - **触发 429 限流问题**：
   0.7.1 已自动过滤 AstrBot 4.29.4 与 4.30 已知的失实本地能力声明，但这不等于完整支持 4.30（当前支持 `>=4.29.4,<4.30`）。若开启「使用电脑能力 → 本机环境」后仍出现 429，可暂在模型配置中改回「不允许任何环境」；这是针对该现象的临时对照，不是所有 429 的通用修复。
+  未发布修复另对 [#19](https://github.com/sl251/astrbot_plugin_antigravity_acp/issues/19) 的 Safe Mode 第 4 条规则实施结构锚定的等义改写，保留安全约束；详见 [CHANGELOG](CHANGELOG.md#未发布)。
 - **只读诊断与统计指令**：
   - `/agy doctor`：进行无损连通性与会话自检。
   - `/agy cost`：查看各实例只读缓存复用、近 24 小时 Token 统计与进程池摘要（不发任何模型请求）。
@@ -128,7 +129,7 @@ git clone --branch main https://github.com/sl251/astrbot_plugin_antigravity_acp.
 | CLI 内置文件、终端、web search/browser 继续拒绝；只有当前活跃 prompt 中已观测且匹配的快照 MCP 调用可获唯一 `allow_once`，宿主审批/校验/预算仍有效 | [MCP 权限与 schema](docs/architecture.md#mcp-的两层权限与两份-schema)，[#12 排障](docs/troubleshooting.md#empty权限拒绝与-12) |
 | 模型 schema 适配与宿主原始契约独立；执行按原始 schema 校验，两者均参与工具指纹 | [#13 参数排障](docs/troubleshooting.md#tool_arguments-与-13) |
 | 默认严格会话复用；已输出正文/思考或交接工具后失败禁止重试/fallback，避免重复副作用 | [会话与防重放](docs/architecture.md#会话历史与防重放) |
-| system 仅过滤已知宿主能力声明；4.30 文案处理不是 4.30 宿主兼容证明；`content_429_candidate` 是候选遥测，不是上游根因 | [过滤与 429 边界](docs/architecture.md#system-过滤与-429-的证据边界)，[#14 排障](docs/troubleshooting.md#rate_limit--quota-与-14) |
+| system 仅过滤已知宿主能力声明并定点兼容改写已知 Safe Mode 单句；4.30 文案处理不是 4.30 宿主兼容证明；`content_429_candidate` 是候选遥测，不是上游根因 | [过滤与 429 边界](docs/architecture.md#system-过滤与-429-的证据边界)，[#14 排障](docs/troubleshooting.md#rate_limit--quota-与-14) |
 | 检测/保存不等于真实生成；用量缺失保留未知；监控只读现有脱敏快照，不发模型请求 | [排障 SOP](docs/troubleshooting.md)，[实机验收分层](docs/testing.md#实机验收) |
 | 工具/图片默认关闭，要求插件与宿主双开关；不支持音频、视频、PDF 或图片生成 | [关键配置](docs/architecture.md#关键配置)、[配置 schema](_conf_schema.json) |
 

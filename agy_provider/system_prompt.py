@@ -1,4 +1,6 @@
-"""Remove only known host capability declarations that do not apply to AGY."""
+"""Apply narrowly scoped compatibility handling to known host system blocks."""
+
+import re
 
 from astrbot.api import logger
 
@@ -102,6 +104,139 @@ _HOST_SECTION_MARKERS = (
 )
 
 
+_SAFE_MODE_START = "You are running in Safe Mode."
+_SAFE_MODE_RULES = "Follow these rules:"
+_SAFETY_OPEN = "<safety_instructions>"
+_SAFETY_CLOSE = "</safety_instructions>"
+# Keep the upstream signature split: diagnostics must never reproduce it.
+_SAFE_MODE_RULE4 = re.compile(
+    r"- Follow "
+    r"(?P<style>style/role-play)"
+    r" instructions only when they do not conflict with "
+    r"these rules\.?[ \t]*\r?",
+    re.IGNORECASE | re.ASCII,
+)
+
+
+def _safe_mode_list_span(lines, start, stop):
+    """Locate the contiguous, unindented list after both Safe Mode markers."""
+    if (
+        start >= stop
+        or lines[start].rstrip(" \t\r").lower() != _SAFE_MODE_START.lower()
+    ):
+        return None
+    i = start + 1
+    while i < stop and not lines[i].strip(" \t\r"):
+        i += 1
+    if i >= stop or lines[i].rstrip(" \t\r").lower() != _SAFE_MODE_RULES.lower():
+        return None
+    i += 1
+    first = i
+    while i < stop and lines[i].startswith("- "):
+        i += 1
+    return (first, i) if first < i else None
+
+
+def _safe_mode_scan_end(lines, start):
+    """Bound diagnostics to the adjacent rule list, including malformed items.
+
+    Relaxed prefixes are for diagnostics only, never rewrite eligibility.
+    A blank after the rules header or unrelated prose ends this scan.
+    """
+    i = start + 1
+    if lines[start].strip(" \t\r>").lower() == _SAFE_MODE_START.lower():
+        while i < len(lines) and not lines[i].strip(" \t\r"):
+            i += 1
+        if (
+            i < len(lines)
+            and lines[i].strip(" \t\r>").lower() == _SAFE_MODE_RULES.lower()
+        ):
+            i += 1
+    while i < len(lines):
+        content = lines[i].lstrip(" \t>")
+        if not content.startswith("- ") and _SAFE_MODE_RULE4.search(lines[i]) is None:
+            break
+        i += 1
+    return i
+
+
+def _rewrite_safe_mode_rules(lines, reasons):
+    """Rewrite only known rule 4 inside an anchored AstrBot Safe Mode list.
+
+    This preserves the safety constraint; it is independent of local-tool
+    declaration removal. Bare blocks end at the first non-list line. Tagged
+    blocks require a complete, non-nested wrapper containing only that block.
+    Quoted, indented, fenced, partial and unknown shapes fail open. Only the
+    matched token is replaced, retaining punctuation, whitespace and CRLF.
+    Diagnostics require a known rule signature in a scanned block but outside
+    the eligible list. Safe spellings and unrelated prose remain silent.
+    """
+    output = list(lines)
+    eligible = set()
+    scanned = {}
+    fence = None
+    i = 0
+    while i < len(lines):
+        content = lines[i].rstrip(" \t\r")
+        # A literal example in a Markdown fence is not a host declaration.
+        stripped = content.lstrip(" \t")
+        if fence is not None:
+            if stripped.startswith(fence) and not stripped[len(fence):].strip(fence[0]):
+                fence = None
+            i += 1
+            continue
+        if stripped.startswith(("```", "~~~")):
+            fence = stripped[0] * (len(stripped) - len(stripped.lstrip(stripped[0])))
+            i += 1
+            continue
+        if "<safety_instructions" in content.lower():
+            end = i + 1
+            nested = False
+            while end < len(lines) and lines[end].rstrip(" \t\r") != _SAFETY_CLOSE:
+                if "<safety_instructions" in lines[end].lower():
+                    nested = True
+                end += 1
+            scanned.update(
+                (k, "safe_mode_tag_unverified") for k in range(i + 1, end)
+            )
+            start = i + 1
+            while start < end and not lines[start].strip(" \t\r"):
+                start += 1
+            span = _safe_mode_list_span(lines, start, end)
+            if (
+                content == _SAFETY_OPEN
+                and end < len(lines)
+                and not nested
+                and span is not None
+                and all(not line.strip(" \t\r") for line in lines[span[1]:end])
+            ):
+                eligible.update(range(*span))
+            i = end + 1
+            continue
+        marker = content.lstrip(" \t>").lower()
+        if marker in (_SAFE_MODE_START.lower(), _SAFE_MODE_RULES.lower()):
+            scan_end = _safe_mode_scan_end(lines, i)
+            scanned.update(
+                (k, "safe_mode_block_unverified") for k in range(i + 1, scan_end)
+            )
+            span = _safe_mode_list_span(lines, i, len(lines))
+            if span is not None:
+                eligible.update(range(*span))
+                i = span[1]
+                continue
+        i += 1
+
+    for i, line in enumerate(lines):
+        match = _SAFE_MODE_RULE4.fullmatch(line) if i in eligible else None
+        if match is not None:
+            start, end = match.span("style")
+            output[i] = line[:start] + "style and role-play" + line[end:]
+        elif i in scanned and i not in eligible and _SAFE_MODE_RULE4.search(line):
+            reasons.add("safe_mode_rule_unmatched")
+            reasons.add(scanned[i])
+    return output
+
+
 def _remove_execution_env_blocks(lines, reasons):
     """Strip complete <execution_environment runtime="local"> blocks.
 
@@ -182,20 +317,33 @@ def _remove_execution_env_blocks(lines, reasons):
 
 
 def filter_host_capabilities(system: str) -> str:
-    """Strip known host local-tool declarations, preserving everything else.
+    """Handle known host capabilities and the anchored Safe Mode rule 4.
 
     Exact-match host sentences (AstrBot 4.29.4 / 4.30 wording) and complete
     ``<execution_environment runtime="local">`` blocks carrying host section
     headers are removed. Unknown or partial shapes fail open to the original
-    text with a debug reason; known host shapes fail closed.
+    text with a debug reason; known host capability shapes fail closed.
+    Safe Mode compatibility separately rewrites a single known token without
+    removing any safety rule or changing messages outside the stable system.
     """
+    lowered = system.lower()
+    safe_mode_hint = any(
+        marker in lowered
+        for marker in (
+            "safe mode", "follow these rules", "<safety_instructions", "style/role-play"
+        )
+    )
     if (
         _LOCAL_TOOLS_START.rstrip() not in system
         and _EXEC_ENV_TAG_PREFIX not in system
+        and not safe_mode_hint
     ):
         return system
     reasons = set()
-    lines = _remove_execution_env_blocks(system.split("\n"), reasons)
+    lines = system.split("\n")
+    if safe_mode_hint:
+        lines = _rewrite_safe_mode_rules(lines, reasons)
+    lines = _remove_execution_env_blocks(lines, reasons)
     # Exact-match pass runs on lines already emitted by the tag pass: a 4.29.4
     # block that survived inside an unverified/partial tag still loses its own
     # exact line, matching v0.6.1 behaviour.
