@@ -30,7 +30,7 @@ flowchart LR
 | [main.py](../main.py) | 生命周期、配置注入、管理员 `/agy setup`、`doctor`、`use`、`cost`，设置页与监控注册 |
 | [provider.py](../agy_provider/provider.py) | 注册 `agy_acp`、Provider 请求/流式响应、模型/档位与工具模式、FailureGuard 接入、防重放标记 |
 | [messages.py](../agy_provider/messages.py)、[media.py](../agy_provider/media.py) | 消息规范化、稳定 system/可信 transient、历史预算，图片格式/目录/SSRF 校验 |
-| [system_prompt.py](../agy_provider/system_prompt.py) | `filter_host_capabilities()`，精确过滤失实宿主能力声明，不修改用户历史 |
+| [system_prompt.py](../agy_provider/system_prompt.py) | `filter_host_capabilities()`，精确过滤失实宿主能力声明，独立定点改写已知 Safe Mode 单句，不修改用户历史 |
 | [sessions.py](../agy_provider/sessions.py) | `Runtime`、会话租约/复用/退休、串行化、生成终态和错误归因 |
 | [transport.py](../agy_provider/transport.py) | `AcpClient` 的 JSON-RPC、ACP 事件/usage、一次性权限、取消与有界输出 |
 | [process.py](../agy_provider/process.py)、[paths.py](../agy_provider/paths.py)、[windows_job.py](../agy_provider/windows_job.py) | CLI 发现/参数探测、隔离目录与 Windows 长路径、子进程树清理 |
@@ -72,10 +72,11 @@ flowchart LR
 
 在 Provider 规范化并验证可信分段之后，chat/tools 对稳定 system 应用同一过滤，再计算 system 哈希/字节数：
 
-- 优先移除精确独立行标签 `<execution_environment runtime="local">` 到结束标签之间、含已知宿主小节标记的完整块；支持 4.30 已知形态。
+- 先独立处理已知 Safe Mode 第 4 条规则（#19）：仅在独占行的 `You are running in Safe Mode.`、可选空行、`Follow these rules:` 后的连续顶格 `- ` 列表内，将整句匹配的 `style/role-play` 定点改写为 `style and role-play`，保留安全约束及其余文字、尾随空白与 LF/CRLF。匹配只容忍大小写和句末句号差异，不扩展至其他词组拼写；改写幂等。4.30 已知 `<safety_instructions>` 包裹须完整、无嵌套，且内部只有该块及边界空行；这不代表支持 4.30 runner/API。
+- 能力声明过滤优先移除精确独立行标签 `<execution_environment runtime="local">` 到结束标签之间、含已知宿主小节标记的完整块；支持 4.30 已知形态。
 - 再移除 AstrBot 4.29.4 / 4.30 已知完整本地能力声明行，包括 Windows 已知变体。
 - 未确认的标签/文案保留，只记录不含原文的 debug 原因。标签扫描与精确行扫描是两步：未确认标签内部若含已知精确声明行，该行仍会被第二步移除；不能承诺标签内每个字节都保留。
-- 不修改人格其他部分、用户/助手历史、可信 transient 或宿主源对象，不做通用正则清洗、工具名审计替换或失败后的净化重试。
+- 除上述已知能力声明过滤外，仅对已知 Safe Mode 单句做结构锚定的定点兼容改写，其余一律 fail-open：未知变体、残缺块、行中段、缩进、引用及代码围栏保留，只记无正文 debug 原因码。不修改人格其他部分、用户/助手历史、可信 transient 或宿主源对象，不做工具名审计替换或失败后的净化重试；不新增 telemetry 字段，不改变 `content_429_candidate` 结构。
 
 `notices.RetryNoticeGuard` 从有界 CLI 摘要识别告警并过滤，非可靠的结构化上游错误通道。明确账号额度文案走 `QUOTA`，持续 429 走 `RATE_LIMIT`，暂态 503 不因单条重试告警直接开启额度冷却。`FailureGuard` 按 `(provider_id, model)` 共用 QUOTA/RATE_LIMIT 冷却，默认 60 秒、最长 300 秒，期满只允许一个 half-open 探测；EMPTY 默认去重 30 秒。候选标签不修改这些键、TTL 或成功清除语义。
 
