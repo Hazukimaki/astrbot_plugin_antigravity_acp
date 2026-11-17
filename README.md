@@ -7,11 +7,11 @@
 ![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows%20%7C%20Docker-blue)
 ![Python](https://img.shields.io/badge/Python-3.11+-blue)
 ![AstrBot](https://img.shields.io/badge/AstrBot-%3E%3D4.29.4%2C%3C4.30-orange)
-![Status](https://img.shields.io/badge/Status-v0.7.1-brightgreen)
+![Status](https://img.shields.io/badge/Status-v0.7.2-brightgreen)
 
 通过 Google 官方 `agy` 客户端内置的 ACP（Agent Client Protocol）协议，把 Antigravity 模型安全、稳定地接入 AstrBot，作为日常对话主力。
 
-> 💡 **版本速递（v0.7.1，2026-11-17）**：落地 429 候选归因遥测与结构化标签过滤；WebUI 上线「概览 / 详细统计 / 高级诊断」三层纯 SVG 运行监控面板。详细改动见 [CHANGELOG.md](CHANGELOG.md)。
+> 💡 **版本速递（v0.7.2，2026-11-17）**：修复 AstrBot 4.29.4 Safe Mode 第 4 条规则触发的上游伪 429（detail-free `RESOURCE_EXHAUSTED`）——定点等义改写该句中的 `style/role-play`，安全约束保持不变。详细改动见 [CHANGELOG.md](CHANGELOG.md)。
 
 ---
 
@@ -101,8 +101,8 @@ git clone --branch main https://github.com/sl251/astrbot_plugin_antigravity_acp.
 - **关于连通测试与额度**：
   插件「首次设置」里的环境检测、登录与拉取模型列表完全免费、不消耗模型额度；但 AstrBot 模型列表自带的「连通测试」会实际发送一条打招呼测试消息，消耗少量额度。另外，保存成功只代表协议握手通过，不等于实际对话一定可用。
 - **触发 429 限流问题**：
-  0.7.1 已自动过滤 AstrBot 4.29.4 与 4.30 已知的失实本地能力声明，但这不等于完整支持 4.30（当前支持 `>=4.29.4,<4.30`）。若开启「使用电脑能力 → 本机环境」后仍出现 429，可暂在模型配置中改回「不允许任何环境」；这是针对该现象的临时对照，不是所有 429 的通用修复。
-  未发布修复另对 [#19](https://github.com/sl251/astrbot_plugin_antigravity_acp/issues/19) 的 Safe Mode 第 4 条规则实施结构锚定的等义改写，保留安全约束；详见 [CHANGELOG](CHANGELOG.md#未发布)。
+  0.7.1 起已自动过滤 AstrBot 4.29.4 与 4.30 已知的失实本地能力声明，但这不等于完整支持 4.30（当前支持 `>=4.29.4,<4.30`）。若开启「使用电脑能力 → 本机环境」后仍出现 429，可暂在模型配置中改回「不允许任何环境」；这是针对该现象的临时对照，不是所有 429 的通用修复。
+  0.7.2 另对 [#19](https://github.com/sl251/astrbot_plugin_antigravity_acp/issues/19) 的 Safe Mode 第 4 条规则实施结构锚定的等义改写，保留安全约束（实机已验收：不再出现该伪 429）；详见 [CHANGELOG](CHANGELOG.md)。
 - **只读诊断与统计指令**：
   - `/agy doctor`：进行无损连通性与会话自检。
   - `/agy cost`：查看各实例只读缓存复用、近 24 小时 Token 统计与进程池摘要（不发任何模型请求）。
@@ -113,6 +113,7 @@ git clone --branch main https://github.com/sl251/astrbot_plugin_antigravity_acp.
 
 *(完整历史见 [`CHANGELOG.md`](./CHANGELOG.md))*
 
+- **v0.7.2**：定点兼容 AstrBot 4.29.4 Safe Mode 第 4 条规则触发的上游伪 429（`style/role-play` 等义改写，fail-open，不改冷却语义）。
 - **v0.7.1**：429 结构化标签过滤扩展至 AstrBot 4.30 已知声明，新增内容相关 429 候选遥测（`content_429_candidate`，不改冷却语义）；WebUI 监控三层重构与纯 SVG 可视化。
 - **v0.6.1**：MCP 权限分层、工具失败归因、数组 schema 宿主契约与本地能力声明过滤。
 - **v0.6.0**：疑似压缩后终态退役、强错误提前中断、部分输出防重放、Windows 认证 MCP 桥与 Job Object。
@@ -121,7 +122,7 @@ git clone --branch main https://github.com/sl251/astrbot_plugin_antigravity_acp.
 
 # 🤖 给 Agent 看的上下文
 
-先读 [AGENTS.md](AGENTS.md)。当前发布基线为 **v0.7.1**；仅支持 AstrBot **`>=4.29.4,<4.30`**、Python **3.11+**。本节只保留当前有效契约，历史实现和既有验收见 [CHANGELOG](CHANGELOG.md)。
+先读 [AGENTS.md](AGENTS.md)。当前发布基线为 **v0.7.2**；仅支持 AstrBot **`>=4.29.4,<4.30`**、Python **3.11+**。本节只保留当前有效契约，历史实现和既有验收见 [CHANGELOG](CHANGELOG.md)。
 
 | 当前契约 | 详细说明与证据入口 |
 | --- | --- |

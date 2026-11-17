@@ -1,6 +1,6 @@
 # Agent 工作入口
 
-本仓库把官方 `agy acp`（stdio）接为 AstrBot 原生 `agy_acp` Provider。当前发布基线 **v0.7.1**，Python **3.11+**，AstrBot **`>=4.29.4,<4.30`**；版本以 [metadata.yaml](metadata.yaml) 为准。识别 4.30 的已知宿主提示文案，不代表兼容 4.30 的 runner/API。Hermes、Codex、AGY 从本页按任务读取资料，无需通读历史施工书。
+本仓库把官方 `agy acp`（stdio）接为 AstrBot 原生 `agy_acp` Provider。当前发布基线 **v0.7.2**，Python **3.11+**，AstrBot **`>=4.29.4,<4.30`**；版本以 [metadata.yaml](metadata.yaml) 为准。识别 4.30 的已知宿主提示文案，不代表兼容 4.30 的 runner/API。Hermes、Codex、AGY 从本页按任务读取资料，无需通读历史施工书。
 
 基线已知标签漂移：`main.py` 注册、ACP clientInfo 和 MCP serverInfo 仍标 `0.6.1`，不等于运行代码退回 0.6.1。文档专项如实记录，不顺带改运行文件；后续行为发布需统一版本声明。
 

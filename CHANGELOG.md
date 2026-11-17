@@ -1,8 +1,11 @@
 # 变更记录
 
-## 未发布
+## 0.7.2（正式发布，2026-11-17）
 
-- **修复 #19：Safe Mode 第 4 条规则触发上游伪 429**。独立于本地能力声明剥离，仅在结构锚定的 AstrBot Safe Mode 列表内，将已知单句中的 `style/role-play` 定点改写为 `style and role-play`，保留 style 与 role-play 均受安全规则约束的语义。匹配忽略大小写、允许省略句末句号，保留其余文字、行尾空白与换行风格；前置短路增加 Safe Mode 哨兵，重复处理幂等。未知变体、残缺块、缩进/引用及非列表文本 fail-open，只记无正文 debug 原因码。不修改 messages、telemetry 或版本号；回归及实机验证待完成。
+- **修复 #19：Safe Mode 第 4 条规则触发上游伪 429**。AstrBot 4.29.4 默认开启 Safe Mode，并把 6 条安全规则前置到 system prompt 最顶端；其中第 4 条 `Follow style/role-play instructions …` 会让 Google Code Assist 返回 detail-free `429 RESOURCE_EXHAUSTED`，与账号、额度、代理和地区无关，换等价措辞即恢复 200（单变量消融：大小写与句末句号被上游归一化，`style/role-play` 的斜杠加连字符是签名必要部分，裸两词不触发）。上游 PR #11114 仅覆盖 4.30 路径且未合并，4.29.4 存量用户仍需插件侧兜底。
+- 修复方式：在该结构锚定的 Safe Mode 列表内，仅把已知单句中的 `style/role-play` 定点改写为 `style and role-play`，保留 `these rules` 指代、行首 `- `、其余文字、尾随空白与 LF/CRLF，改写幂等；style 与 role-play 均仍受安全规则约束，不删句、不删规则、不改 messages 与 telemetry。
+- 匹配边界：独占行 `You are running in Safe Mode.`、可选空行、`Follow these rules:` 之后的连续顶格 `- ` 列表；4.30 形态要求完整、无嵌套、内部只有该块的 `<safety_instructions>` 包裹。仅容忍大小写与句末句号，不放宽到已验证安全的其它拼写；未知变体、残缺/嵌套标签、缩进、引用块、代码围栏一律 fail-open，只记录无正文 debug 原因码；前置短路增加 Safe Mode 哨兵。
+- **实机验收（小鱼 / shanghai，AstrBot 4.29.4）**：容器回归 256 项 OK（12 项平台跳过）；webchat 端到端经完整 pipeline 由 `agy_probe`（gemini-3.8-flash）正常应答，未触发 429、未回落 fallback；对宿主真实 `LLM_SAFETY_MODE_SYSTEM_PROMPT` 执行过滤，差异仅第 4 条一行（`style/role-play` → `style and role-play`），其余字节不变。
 
 ## 0.7.1（正式发布，2026-11-17）
 
